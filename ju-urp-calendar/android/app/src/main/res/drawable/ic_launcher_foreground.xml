@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- calendar body -->
+    <path android:fillColor="#FFFFFF" android:pathData="M30,34 h48 a6,6 0 0 1 6,6 v36 a6,6 0 0 1 -6,6 h-48 a6,6 0 0 1 -6,-6 v-36 a6,6 0 0 1 6,-6 z"/>
+    <!-- header band -->
+    <path android:fillColor="#1E2B8A" android:pathData="M30,34 h48 a6,6 0 0 1 6,6 v8 h-60 v-8 a6,6 0 0 1 6,-6 z"/>
+    <!-- rings -->
+    <path android:fillColor="#FFFFFF" android:pathData="M40,28 h5 v12 h-5 z M63,28 h5 v12 h-5 z"/>
+    <!-- grid dots -->
+    <path android:fillColor="#3B63F6" android:pathData="M36,54 h8 v6 h-8 z M50,54 h8 v6 h-8 z M64,54 h8 v6 h-8 z M36,66 h8 v6 h-8 z M50,66 h8 v6 h-8 z"/>
+    <!-- highlighted day -->
+    <path android:fillColor="#F59E0B" android:pathData="M64,66 h8 v6 h-8 z"/>
+    <!-- graduation cap -->
+    <path android:fillColor="#FFFFFF" android:pathData="M54,12 L74,20 L54,28 L34,20 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M42,23 v6 c0,3 6,5 12,5 s12,-2 12,-5 v-6 l-12,5 z" android:fillAlpha="0.85"/>
+</vector>

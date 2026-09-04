@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">JU URP Calendar</string>
+    <string name="title_activity_main">JU URP Calendar</string>
+    <string name="package_name">bd.ac.juniv.urp.calendar</string>
+    <string name="custom_url_scheme">juurp</string>
+    <string name="widget_today">Today\'s Classes</string>
+    <string name="widget_note">Daily Note</string>
+    <string name="widget_alarm">Next Alarm</string>
+    <string name="widget_today_desc">Your classes and events for today</string>
+    <string name="widget_note_desc">Today\'s note at a glance</string>
+    <string name="widget_alarm_desc">Next alarm and upcoming deadline</string>
+</resources>
