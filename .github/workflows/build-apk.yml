@@ -1,0 +1,67 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: ["**"]
+    paths: ["ju-urp-calendar/**", ".github/workflows/build-apk.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ju-urp-calendar
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ju-urp-calendar/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install & build web app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Build signed release APK
+        working-directory: ju-urp-calendar/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+          cp app/build/outputs/apk/release/app-release.apk ../CaCa.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CaCa.apk
+          path: ju-urp-calendar/CaCa.apk
+          if-no-files-found: error
+
+      - name: Publish GitHub release (latest build)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-latest
+          name: CaCa – latest APK
+          body: |
+            Installable Android APK (Android 10+). Signed with a fixed key, so installing over a previous CaCa build keeps all your data. Enable "Install unknown apps" for your browser/file manager, then open the APK.
+            Built from ${{ github.sha }} on branch ${{ github.ref_name }}.
+          files: ju-urp-calendar/CaCa.apk
+          prerelease: false
