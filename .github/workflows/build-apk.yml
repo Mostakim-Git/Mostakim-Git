@@ -41,21 +41,11 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Generate release keystore (self-signed, sideload)
-        run: |
-          keytool -genkeypair -v -keystore android/app/release.keystore -storepass caca2024 -keypass caca2024 \
-            -alias caca -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=CaCa, O=CaCa, L=Dhaka, C=BD"
-
       - name: Build signed release APK
         working-directory: ju-urp-calendar/android
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease --no-daemon \
-            -Pandroid.injected.signing.store.file=$PWD/app/release.keystore \
-            -Pandroid.injected.signing.store.password=caca2024 \
-            -Pandroid.injected.signing.key.alias=caca \
-            -Pandroid.injected.signing.key.password=caca2024
+          ./gradlew assembleRelease --no-daemon
           cp app/build/outputs/apk/release/app-release.apk ../CaCa.apk
 
       - name: Upload APK artifact
@@ -71,7 +61,7 @@ jobs:
           tag_name: apk-latest
           name: CaCa – latest APK
           body: |
-            Installable Android APK (Android 10+). Enable "Install unknown apps" for your browser/file manager, then open the APK.
+            Installable Android APK (Android 10+). Signed with a fixed key, so installing over a previous CaCa build keeps all your data. Enable "Install unknown apps" for your browser/file manager, then open the APK.
             Built from ${{ github.sha }} on branch ${{ github.ref_name }}.
           files: ju-urp-calendar/CaCa.apk
           prerelease: false

@@ -10,6 +10,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(WidgetsPlugin.class);
+        registerPlugin(AlarmsPlugin.class);
         super.onCreate(savedInstanceState);
     }
 

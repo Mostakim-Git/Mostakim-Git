@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { Profile, Course, CalEvent, Note, Lecture, Alarm, Settings } from './types';
+import type { Profile, Course, CalEvent, Note, Lecture, Alarm, Settings, Routine } from './types';
 
 export class AppDB extends Dexie {
   profile!: Table<Profile, number>;
@@ -9,6 +9,7 @@ export class AppDB extends Dexie {
   lectures!: Table<Lecture, number>;
   alarms!: Table<Alarm, number>;
   settings!: Table<Settings, number>;
+  routines!: Table<Routine, number>;
 
   constructor() {
     super('ju-urp-calendar');
@@ -20,6 +21,17 @@ export class AppDB extends Dexie {
       lectures: '++id, courseCode, addedAt',
       alarms: '++id, enabled, time',
       settings: 'id',
+    });
+    // v2: weekly routines + seriesId index on events + new alarm settings (existing data is preserved)
+    this.version(2).stores({
+      events: '++id, date, type, courseCode, seriesId',
+      routines: '++id, courseCode',
+    }).upgrade(async tx => {
+      await tx.table('settings').toCollection().modify((s: Settings) => {
+        s.classReminderMinutes = s.classReminderMinutes ?? 11;
+        s.firstClassAlarm ??= true; s.firstClassAlarmMinutes ??= 30;
+        s.classNotifications ??= true; s.alarmTone ??= 'default'; s.alarmToneName ??= 'Default alarm';
+      });
     });
   }
 }

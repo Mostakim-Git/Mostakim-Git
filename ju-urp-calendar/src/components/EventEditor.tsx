@@ -63,6 +63,7 @@ export function EventEditor({ open, onClose, initial, defaultDate }: { open: boo
         <button onClick={save} disabled={saving} className="btn-primary">{saving ? 'Saving…' : form.id ? 'Save changes' : 'Add event'}</button>
       </>}>
       <div className="space-y-4">
+        {form.seriesId && <div className="rounded-xl bg-brand-50 dark:bg-brand-950/40 border border-brand-100 dark:border-brand-900 p-3 text-xs text-brand-800 dark:text-brand-200">Part of a <b>weekly routine</b>. Changes here affect only this one class. To change every week, edit the routine on the Weekly Routine page.</div>}
         <Field label="Title"><input autoFocus className="input" placeholder="e.g. Mid-term: Transportation Planning" value={form.title} onChange={e => set('title', e.target.value)} /></Field>
         <div>
           <span className="label">Type</span>

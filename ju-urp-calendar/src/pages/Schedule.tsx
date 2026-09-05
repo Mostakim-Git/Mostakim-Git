@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { addDays, startOfWeek, format, isSameDay } from 'date-fns';
-import { ChevronLeft, ChevronRight, Plus, Clock, MapPin } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, Repeat } from 'lucide-react';
 import { db } from '../lib/db';
 import type { CalEvent } from '../lib/types';
 import { toKey, todayKey, eventTypeMeta, cn, minutesOf, fmtTime, fromKey } from '../lib/utils';
@@ -11,7 +11,7 @@ import { useNow } from '../lib/hooks';
 
 const START_H = 7, END_H = 22, PX_PER_MIN = 1.1;
 
-export function SchedulePage({ selected, onSelect }: { selected: string; onSelect: (d: string) => void }) {
+export function SchedulePage({ selected, onSelect, onRoutine }: { selected: string; onSelect: (d: string) => void; onRoutine?: () => void }) {
   const settings = useLiveQuery(() => db.settings.get(1));
   const wso = settings?.weekStartsOn ?? 0;
   const now = useNow(60000);
@@ -49,6 +49,7 @@ export function SchedulePage({ selected, onSelect }: { selected: string; onSelec
           <div className="inline-flex rounded-xl border border-slate-200 dark:border-slate-700 p-0.5 bg-white dark:bg-slate-900">
             {(['day', 'week'] as const).map(m => <button key={m} onClick={() => setMode(m)} className={cn('rounded-lg px-3 py-1.5 text-sm font-medium capitalize', mode === m ? 'bg-brand-600 text-white' : 'text-slate-600 dark:text-slate-300')}>{m}</button>)}
           </div>
+          {onRoutine && <button onClick={onRoutine} className="btn-outline" title="Weekly routine"><Repeat className="h-4 w-4" /><span className="hidden sm:inline"> Routine</span></button>}
           <button onClick={() => openNew(selected)} className="btn-primary"><Plus className="h-4 w-4" /> Event</button>
         </>} />
 
@@ -77,7 +78,7 @@ export function SchedulePage({ selected, onSelect }: { selected: string; onSelec
 
         {events === undefined ? <div className="p-4 space-y-3">{[...Array(5)].map((_, i) => <div key={i} className="skeleton h-14 w-full" />)}</div> :
           mode === 'day' && (byDay.get(selected) ?? []).length === 0 ? (
-            <EmptyState icon={Clock} title="Free day" description="No classes or events on this day. Tap the + button or click an hour slot to add one." action={<button onClick={() => openNew(selected)} className="btn-outline"><Plus className="h-4 w-4" /> Add event</button>} />
+            <EmptyState icon={Clock} title="Free day" description="No classes or events on this day. Add one, or set up your weekly routine so classes repeat automatically." action={<div className="flex gap-2"><button onClick={() => openNew(selected)} className="btn-outline"><Plus className="h-4 w-4" /> Add event</button>{onRoutine && <button onClick={onRoutine} className="btn-primary"><Repeat className="h-4 w-4" /> Weekly routine</button>}</div>} />
           ) : (
           <div className="overflow-x-auto scrollbar-thin">
             <div className="min-w-[640px] lg:min-w-0">

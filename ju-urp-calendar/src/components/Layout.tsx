@@ -1,17 +1,18 @@
 import { type ReactNode } from 'react';
-import { LayoutDashboard, CalendarDays, Clock, StickyNote, FileText, AlarmClock, User, Settings, LayoutGrid, BookOpen } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Clock, StickyNote, FileText, AlarmClock, User, Settings, LayoutGrid, BookOpen, Repeat } from 'lucide-react';
 import { AppLogo } from './AppLogo';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/db';
 import { cn } from '../lib/utils';
 import { Avatar } from './ui';
 
-export type Route = 'dashboard' | 'calendar' | 'schedule' | 'notes' | 'lectures' | 'courses' | 'alarms' | 'widgets' | 'profile' | 'settings';
+export type Route = 'dashboard' | 'calendar' | 'schedule' | 'routine' | 'notes' | 'lectures' | 'courses' | 'alarms' | 'widgets' | 'profile' | 'settings';
 
 export const NAV: { id: Route; label: string; icon: typeof LayoutDashboard; mobile?: boolean }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, mobile: true },
   { id: 'calendar', label: 'Calendar', icon: CalendarDays, mobile: true },
   { id: 'schedule', label: 'Schedule', icon: Clock, mobile: true },
+  { id: 'routine', label: 'Weekly Routine', icon: Repeat },
   { id: 'notes', label: 'Daily Notes', icon: StickyNote, mobile: true },
   { id: 'lectures', label: 'Class Notes (PDF)', icon: FileText },
   { id: 'courses', label: 'Courses', icon: BookOpen },

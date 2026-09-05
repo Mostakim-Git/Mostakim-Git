@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { addDays, format, differenceInCalendarDays } from 'date-fns';
-import { Plus, CalendarCheck, AlarmClock, FileText, StickyNote, ArrowRight, Sun, Moon, Sunrise, BookOpen, Flame } from 'lucide-react';
+import { Plus, CalendarCheck, AlarmClock, FileText, StickyNote, ArrowRight, Sun, Moon, Sunrise, BookOpen, Flame, Repeat } from 'lucide-react';
 import { db } from '../lib/db';
 import type { CalEvent } from '../lib/types';
 import { todayKey, toKey, fmtTime, minutesOf, eventTypeMeta, cn, fromKey } from '../lib/utils';
@@ -156,7 +156,8 @@ export function Dashboard({ onNavigate, onOpenDay }: { onNavigate: (r: Route) =>
         </div>
       </section>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <QuickLink icon={Repeat} label="Weekly routine" desc="Repeat classes every week" onClick={() => onNavigate('routine')} />
         <QuickLink icon={AlarmClock} label="Set an alarm" desc="Wake up for that 9 AM class" onClick={() => onNavigate('alarms')} />
         <QuickLink icon={FileText} label="Add class note PDF" desc="Saved to your file manager" onClick={() => onNavigate('lectures')} />
         <QuickLink icon={StickyNote} label="Browse notes" desc="Your day-by-day journal" onClick={() => onNavigate('notes')} />

@@ -8,7 +8,8 @@ import { CoursesPage } from './pages/Courses';
 import { db } from './lib/db';
 import { initIfNeeded } from './data/seed';
 import { todayKey } from './lib/utils';
-import { initNotifications, isNative, rescheduleAll } from './lib/notifications';
+import { initNotifications, isNative, rescheduleAll, scheduleClassRemindersDebounced } from './lib/notifications';
+import { RoutinePage } from './pages/Routine';
 import { startWidgetSync } from './lib/widget';
 import { Layout, type Route } from './components/Layout';
 import { ToastProvider } from './components/Toast';
@@ -23,7 +24,7 @@ import { WidgetsPage } from './pages/Widgets';
 import { ProfilePage } from './pages/Profile';
 import { SettingsPage } from './pages/Settings';
 
-const ROUTES: Route[] = ['dashboard', 'calendar', 'schedule', 'notes', 'lectures', 'courses', 'alarms', 'widgets', 'profile', 'settings'];
+const ROUTES: Route[] = ['dashboard', 'calendar', 'schedule', 'routine', 'notes', 'lectures', 'courses', 'alarms', 'widgets', 'profile', 'settings'];
 function routeFromHash(): Route { const h = location.hash.replace('#/', '') as Route; return ROUTES.includes(h) ? h : 'dashboard'; }
 
 export default function App() {
@@ -40,6 +41,10 @@ export default function App() {
       const stop = startWidgetSync();
       if (isNative) {
         rescheduleAll();
+        const bump = () => scheduleClassRemindersDebounced();
+        db.events.hook('creating', bump); db.events.hook('updating', bump); db.events.hook('deleting', bump);
+        db.settings.hook('updating', bump);
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleClassRemindersDebounced(); });
         LocalNotifications.addListener('localNotificationActionPerformed', (n) => {
           if (n.notification.extra?.alarmId) navigate('alarms'); else navigate('schedule');
         });
@@ -77,7 +82,8 @@ export default function App() {
       <Layout route={route} onNavigate={navigate}>
         {route === 'dashboard' && <Dashboard onNavigate={navigate} onOpenDay={openDay} />}
         {route === 'calendar' && <CalendarPage selected={selectedDay} onSelect={setSelectedDay} />}
-        {route === 'schedule' && <SchedulePage selected={selectedDay} onSelect={setSelectedDay} />}
+        {route === 'schedule' && <SchedulePage selected={selectedDay} onSelect={setSelectedDay} onRoutine={() => navigate('routine')} />}
+        {route === 'routine' && <RoutinePage />}
         {route === 'notes' && <NotesPage selected={selectedDay} onSelect={setSelectedDay} />}
         {route === 'lectures' && <LecturesPage />}
         {route === 'courses' && <CoursesPage />}
