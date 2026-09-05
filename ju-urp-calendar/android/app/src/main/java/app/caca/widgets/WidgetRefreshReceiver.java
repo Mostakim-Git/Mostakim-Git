@@ -1,4 +1,4 @@
-package bd.ac.juniv.urp.calendar.widgets;
+package app.caca.widgets;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

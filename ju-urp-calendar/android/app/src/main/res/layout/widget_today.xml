@@ -7,7 +7,7 @@
         <TextView android:id="@+id/title" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Today" android:textColor="#FFFFFF" android:textSize="15sp" android:textStyle="bold" />
         <TextView android:id="@+id/count" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:textColor="#99FFFFFF" android:textSize="11sp" />
     </LinearLayout>
-    <TextView android:id="@+id/subtitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="JU URP Calendar" android:textColor="#80FFFFFF" android:textSize="11sp" android:layout_marginBottom="8dp" />
+    <TextView android:id="@+id/subtitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="CaCa" android:textColor="#80FFFFFF" android:textSize="11sp" android:layout_marginBottom="8dp" />
     <ListView android:id="@+id/list" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:divider="@null" android:dividerHeight="4dp" android:scrollbars="none" />
     <TextView android:id="@+id/empty" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:gravity="center" android:text="Free day 🎉" android:textColor="#99FFFFFF" android:textSize="14sp" android:visibility="gone" />
 </LinearLayout>

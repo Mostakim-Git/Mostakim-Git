@@ -1,18 +1,20 @@
 import { type ReactNode } from 'react';
-import { LayoutDashboard, CalendarDays, Clock, StickyNote, FileText, AlarmClock, User, Settings, GraduationCap, LayoutGrid } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Clock, StickyNote, FileText, AlarmClock, User, Settings, LayoutGrid, BookOpen } from 'lucide-react';
+import { AppLogo } from './AppLogo';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/db';
 import { cn } from '../lib/utils';
 import { Avatar } from './ui';
 
-export type Route = 'dashboard' | 'calendar' | 'schedule' | 'notes' | 'lectures' | 'alarms' | 'widgets' | 'profile' | 'settings';
+export type Route = 'dashboard' | 'calendar' | 'schedule' | 'notes' | 'lectures' | 'courses' | 'alarms' | 'widgets' | 'profile' | 'settings';
 
 export const NAV: { id: Route; label: string; icon: typeof LayoutDashboard; mobile?: boolean }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, mobile: true },
   { id: 'calendar', label: 'Calendar', icon: CalendarDays, mobile: true },
   { id: 'schedule', label: 'Schedule', icon: Clock, mobile: true },
   { id: 'notes', label: 'Daily Notes', icon: StickyNote, mobile: true },
-  { id: 'lectures', label: 'Lectures (PDF)', icon: FileText },
+  { id: 'lectures', label: 'Class Notes (PDF)', icon: FileText },
+  { id: 'courses', label: 'Courses', icon: BookOpen },
   { id: 'alarms', label: 'Alarms', icon: AlarmClock, mobile: true },
   { id: 'widgets', label: 'Widgets', icon: LayoutGrid },
   { id: 'profile', label: 'Profile', icon: User },
@@ -26,12 +28,10 @@ export function Layout({ route, onNavigate, children }: { route: Route; onNaviga
       {/* Sidebar (desktop / tablet) */}
       <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div className="flex items-center gap-3 px-5 h-16 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-md shadow-brand-600/30">
-            <GraduationCap className="h-5 w-5" />
-          </div>
+          <AppLogo size={36} />
           <div className="leading-tight">
-            <div className="text-sm font-bold text-slate-900 dark:text-white">JU URP Calendar</div>
-            <div className="text-[11px] text-slate-500">Jahangirnagar University</div>
+            <div className="text-sm font-bold text-slate-900 dark:text-white">CaCa</div>
+            <div className="text-[11px] text-slate-500 truncate max-w-[150px]">{profile?.university || 'Class Calendar'}</div>
           </div>
         </div>
         <nav className="flex-1 overflow-y-auto p-3 space-y-1 scrollbar-thin">
@@ -45,7 +45,7 @@ export function Layout({ route, onNavigate, children }: { route: Route; onNaviga
           {profile ? <Avatar name={profile.name} color={profile.avatarColor} size="sm" /> : <div className="skeleton h-8 w-8 rounded-full" />}
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-slate-900 dark:text-white">{profile?.name ?? '...'}</div>
-            <div className="truncate text-xs text-slate-500">{profile ? `${profile.batch} · ${profile.year}` : ''}</div>
+            <div className="truncate text-xs text-slate-500">{profile ? [profile.department, profile.year].filter(Boolean).join(' · ') : ''}</div>
           </div>
         </button>
       </aside>
@@ -55,8 +55,8 @@ export function Layout({ route, onNavigate, children }: { route: Route; onNaviga
         {/* Mobile top bar */}
         <header className="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 h-14 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200 dark:border-slate-800 pt-[var(--sat)] box-content">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white"><GraduationCap className="h-4 w-4" /></div>
-            <span className="text-sm font-bold text-slate-900 dark:text-white">JU URP Calendar</span>
+            <AppLogo size={30} />
+            <span className="text-sm font-bold text-slate-900 dark:text-white">CaCa</span>
           </div>
           <button onClick={() => onNavigate('profile')}>{profile ? <Avatar name={profile.name} color={profile.avatarColor} size="sm" /> : <div className="skeleton h-8 w-8 rounded-full" />}</button>
         </header>

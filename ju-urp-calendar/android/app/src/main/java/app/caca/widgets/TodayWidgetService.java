@@ -1,4 +1,4 @@
-package bd.ac.juniv.urp.calendar.widgets;
+package app.caca.widgets;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +8,7 @@ import android.widget.RemoteViewsService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import bd.ac.juniv.urp.calendar.R;
+import app.caca.R;
 
 public class TodayWidgetService extends RemoteViewsService {
     @Override
@@ -23,10 +23,7 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override public void onCreate() { load(); }
         @Override public void onDataSetChanged() { load(); }
-        private void load() {
-            JSONArray a = WidgetData.load(ctx).optJSONArray("events");
-            events = a == null ? new JSONArray() : a;
-        }
+        private void load() { events = WidgetData.todayEvents(WidgetData.load(ctx)); }
         @Override public void onDestroy() {}
         @Override public int getCount() { return events.length(); }
         @Override public RemoteViews getViewAt(int pos) {
@@ -40,12 +37,12 @@ public class TodayWidgetService extends RemoteViewsService {
                 rv.setTextViewText(R.id.row_time, e.optString("startLabel"));
                 rv.setInt(R.id.bar, "setBackgroundColor", WidgetData.colorForType(e.optString("type")));
             }
-            rv.setOnClickFillInIntent(R.id.row_title, new Intent());
+            rv.setOnClickFillInIntent(R.id.row_root, new Intent());
             return rv;
         }
         @Override public RemoteViews getLoadingView() { return null; }
         @Override public int getViewTypeCount() { return 1; }
         @Override public long getItemId(int position) { return position; }
-        @Override public boolean hasStableIds() { return true; }
+        @Override public boolean hasStableIds() { return false; }
     }
 }

@@ -55,8 +55,8 @@ export function Dashboard({ onNavigate, onOpenDay }: { onNavigate: (r: Route) =>
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-brand-100 text-sm"><greeting.Icon className="h-4 w-4" /> {greeting.text}</div>
-            {profile ? <h1 className="mt-1 text-2xl md:text-3xl font-bold">{profile.name.split(' ')[0]} 👋</h1> : <Skeleton className="mt-2 h-8 w-40 bg-white/20" />}
-            <p className="mt-1 text-sm text-brand-100">{format(now, 'EEEE, d MMMM yyyy')} · {profile ? `${profile.year}, ${profile.semester}` : ''}</p>
+            {profile ? <h1 className="mt-1 text-2xl md:text-3xl font-bold">{profile.name.split(' ')[0] || 'there'} 👋</h1> : <Skeleton className="mt-2 h-8 w-40 bg-white/20" />}
+            <p className="mt-1 text-sm text-brand-100">{format(now, 'EEEE, d MMMM yyyy')}{profile && [profile.department, profile.year].filter(Boolean).length ? ` · ${[profile.department, profile.year].filter(Boolean).join(', ')}` : ''}</p>
           </div>
           <div className="flex gap-2">
             <button onClick={() => setEditing(null)} className="btn bg-white text-brand-700 hover:bg-brand-50"><Plus className="h-4 w-4" /> New event</button>
@@ -66,7 +66,7 @@ export function Dashboard({ onNavigate, onOpenDay }: { onNavigate: (r: Route) =>
           <Stat label="Today" value={todayEvents ? `${todayEvents.length}` : '…'} sub="events" onClick={() => onNavigate('schedule')} />
           <Stat label="Next up" value={current ? 'Now' : next ? fmtTime(next.start) : '—'} sub={(current ?? next)?.title ?? 'Nothing more today'} onClick={() => onNavigate('schedule')} />
           <Stat label="Alarm" value={nextAlarm ? fmtTime(nextAlarm.time) : 'Off'} sub={nextAlarm?.label ?? 'No alarms set'} onClick={() => onNavigate('alarms')} />
-          <Stat label="Lectures" value={lectureCount === undefined ? '…' : String(lectureCount)} sub="PDF files" onClick={() => onNavigate('lectures')} />
+          <Stat label="Class notes" value={lectureCount === undefined ? '…' : String(lectureCount)} sub="PDF files" onClick={() => onNavigate('lectures')} />
         </div>
       </div>
 
@@ -139,8 +139,9 @@ export function Dashboard({ onNavigate, onOpenDay }: { onNavigate: (r: Route) =>
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2"><BookOpen className="h-4 w-4 text-brand-500" /> This semester's courses</h2>
-          <span className="text-xs text-slate-500">{courses.reduce((s, c) => s + c.credit, 0)} credits</span>
+          <button onClick={() => onNavigate('courses')} className="btn-ghost text-brand-600 text-xs">{courses.length ? `${courses.reduce((s, c) => s + c.credit, 0)} credits · Manage` : 'Add courses'} <ArrowRight className="h-3.5 w-3.5" /></button>
         </div>
+        {courses.length === 0 && <button onClick={() => onNavigate('courses')} className="card w-full p-5 text-sm text-slate-500 border-dashed hover:border-brand-300 hover:text-brand-600 transition">No courses yet — tap to add the courses you are taking this semester.</button>}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {courses.map(c => (
             <div key={c.code} className="card p-4 flex gap-3 hover:shadow-md transition">
@@ -157,7 +158,7 @@ export function Dashboard({ onNavigate, onOpenDay }: { onNavigate: (r: Route) =>
 
       <div className="grid gap-3 sm:grid-cols-3">
         <QuickLink icon={AlarmClock} label="Set an alarm" desc="Wake up for that 9 AM class" onClick={() => onNavigate('alarms')} />
-        <QuickLink icon={FileText} label="Add lecture PDF" desc="Keep slides offline" onClick={() => onNavigate('lectures')} />
+        <QuickLink icon={FileText} label="Add class note PDF" desc="Saved to your file manager" onClick={() => onNavigate('lectures')} />
         <QuickLink icon={StickyNote} label="Browse notes" desc="Your day-by-day journal" onClick={() => onNavigate('notes')} />
       </div>
 

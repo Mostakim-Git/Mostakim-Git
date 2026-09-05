@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Pencil, Save, X, Mail, Phone, Home, Droplets, GraduationCap, IdCard, BookOpen } from 'lucide-react';
+import { Pencil, Save, X, Mail, Phone, Home, Droplets, GraduationCap, IdCard, BookOpen, School, Building2 } from 'lucide-react';
 import { db } from '../lib/db';
 import type { Profile } from '../lib/types';
 import { cn } from '../lib/utils';
@@ -48,12 +48,14 @@ export function ProfilePage() {
             <div className="rounded-full ring-4 ring-white dark:ring-slate-900"><Avatar name={form.name} color={form.avatarColor} size="xl" /></div>
             <div className="pb-1 flex-1 min-w-[200px]">
               {edit ? <input className="input text-lg font-bold" value={form.name} onChange={e => set('name', e.target.value)} /> : <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{profile.name}</h2>}
-              <p className="text-sm text-slate-500 mt-0.5">Dept. of Urban & Regional Planning · Jahangirnagar University</p>
+              <p className="text-sm text-slate-500 mt-0.5">{[profile.department, profile.university].filter(Boolean).join(' · ') || 'Add your university & department below'}</p>
             </div>
           </div>
           {edit && <div className="mt-4 flex items-center gap-2"><span className="text-xs text-slate-500 mr-1">Avatar colour</span>{COLORS.map(c => <button key={c} onClick={() => set('avatarColor', c)} className={cn('h-7 w-7 rounded-full transition', form.avatarColor === c && 'ring-2 ring-offset-2 ring-slate-400 dark:ring-offset-slate-900 scale-110')} style={{ background: c }} />)}</div>}
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <Item icon={School} label="University" edit={edit} value={form.university} onChange={v => set('university', v)} />
+            <Item icon={Building2} label="Department" edit={edit} value={form.department} onChange={v => set('department', v)} />
             <Item icon={IdCard} label="Student ID" edit={edit} value={form.studentId} onChange={v => set('studentId', v)} />
             <Item icon={GraduationCap} label="Batch" edit={edit} value={form.batch} onChange={v => set('batch', v)} />
             <Item icon={BookOpen} label="Year" edit={edit} value={form.year} onChange={v => set('year', v)} />
@@ -72,7 +74,7 @@ export function ProfilePage() {
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        {[['Events', stats?.events], ['Notes', stats?.notes], ['Lecture PDFs', stats?.lectures]].map(([l, v]) => (
+        {[['Events', stats?.events], ['Notes', stats?.notes], ['Class note PDFs', stats?.lectures]].map(([l, v]) => (
           <div key={l as string} className="card p-4 text-center"><div className="text-3xl font-bold text-slate-900 dark:text-white">{v ?? '…'}</div><div className="text-xs uppercase tracking-wide text-slate-500">{l}</div></div>
         ))}
       </div>

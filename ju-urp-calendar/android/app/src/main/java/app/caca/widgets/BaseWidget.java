@@ -1,14 +1,17 @@
-package bd.ac.juniv.urp.calendar.widgets;
+package app.caca.widgets;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.widget.RemoteViews;
 
-import bd.ac.juniv.urp.calendar.MainActivity;
+import app.caca.MainActivity;
+import app.caca.R;
 
 public abstract class BaseWidget extends AppWidgetProvider {
 
@@ -19,25 +22,32 @@ public abstract class BaseWidget extends AppWidgetProvider {
     public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
         for (int id : ids) {
             RemoteViews rv = build(ctx, id);
-            rv.setOnClickPendingIntent(bd.ac.juniv.urp.calendar.R.id.widget_root, openApp(ctx, route(), id));
+            rv.setOnClickPendingIntent(R.id.widget_root, openApp(ctx, route(), id));
             mgr.updateAppWidget(id, rv);
         }
     }
 
     @Override
+    public void onAppWidgetOptionsChanged(Context ctx, AppWidgetManager mgr, int id, Bundle newOptions) {
+        onUpdate(ctx, mgr, new int[]{ id });
+    }
+
+    @Override
     public void onReceive(Context ctx, Intent intent) {
         super.onReceive(ctx, intent);
-        if (WidgetData.ACTION_REFRESH.equals(intent.getAction())) {
+        String action = intent.getAction();
+        if (WidgetData.ACTION_REFRESH.equals(action) || Intent.ACTION_DATE_CHANGED.equals(action)
+                || Intent.ACTION_TIME_CHANGED.equals(action) || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
             AppWidgetManager mgr = AppWidgetManager.getInstance(ctx);
-            int[] ids = mgr.getAppWidgetIds(new android.content.ComponentName(ctx, getClass()));
-            onUpdate(ctx, mgr, ids);
+            int[] ids = mgr.getAppWidgetIds(new ComponentName(ctx, getClass()));
+            if (ids.length > 0) onUpdate(ctx, mgr, ids);
         }
     }
 
     protected static PendingIntent openApp(Context ctx, String route, int reqCode) {
         Intent i = new Intent(ctx, MainActivity.class);
         i.setAction(Intent.ACTION_VIEW);
-        i.setData(Uri.parse("juurp://" + route));
+        i.setData(Uri.parse("caca://" + route));
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(ctx, reqCode, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }

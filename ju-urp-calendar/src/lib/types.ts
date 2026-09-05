@@ -3,6 +3,8 @@ export type EventType = 'class' | 'lab' | 'exam' | 'assignment' | 'holiday' | 's
 export interface Profile {
   id: number;
   name: string;
+  university: string;
+  department: string;
   studentId: string;
   batch: string;
   year: string;
@@ -54,7 +56,9 @@ export interface Lecture {
   courseCode: string;
   fileName: string;
   size: number;
-  blob: Blob;
+  blob?: Blob;
+  filePath?: string;   // path inside device storage (Documents/CaCa/...)
+  fileUri?: string;
   pages?: number;
   addedAt: number;
   tags: string[];
@@ -79,4 +83,5 @@ export interface Settings {
   weekStartsOn: 0 | 6;
   classReminderMinutes: number;
   seeded: boolean;
+  onboarded: boolean;
 }

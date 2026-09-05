@@ -1,38 +1,46 @@
+import { registerPlugin, Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
+import { addDays } from 'date-fns';
 import { db } from './db';
-import { todayKey, fmtTime } from './utils';
+import { todayKey, toKey, fmtTime } from './utils';
+
+interface WidgetsPlugin { refresh(): Promise<void>; requestPin(opts: { kind: 'today' | 'note' | 'alarm' }): Promise<{ supported: boolean }> }
+const Widgets = registerPlugin<WidgetsPlugin>('Widgets');
 
 /**
- * Bridge to the native Android home-screen widgets.
- * The web layer writes a compact JSON snapshot into SharedPreferences (via Capacitor Preferences,
- * group "CapacitorStorage"). The Java AppWidgetProviders read it and render RemoteViews, and
- * we broadcast an update intent so widgets refresh immediately.
+ * Snapshot consumed by the native Android widgets. It covers the next 14 days so the
+ * native side can resolve "today" itself (survives midnight without the app running).
  */
 export interface WidgetSnapshot {
   updatedAt: number;
-  date: string;
   studentName: string;
-  events: { title: string; start: string; end: string; startLabel: string; location: string; type: string; courseCode?: string }[];
-  note: string;
-  nextAlarm: string | null;
+  days: Record<string, { title: string; start: string; end: string; startLabel: string; location: string; type: string; courseCode?: string }[]>;
+  notes: Record<string, string>;
+  alarms: { time: string; timeLabel: string; label: string; days: number[] }[];
   deadlines: { title: string; date: string; type: string }[];
 }
 
 export async function buildSnapshot(): Promise<WidgetSnapshot> {
   const today = todayKey();
-  const [profile, events, note, alarms, allUpcoming] = await Promise.all([
+  const end = toKey(addDays(new Date(), 14));
+  const [profile, events, notes, alarms, upcoming] = await Promise.all([
     db.profile.get(1),
-    db.events.where('date').equals(today).sortBy('start'),
-    db.notes.where('date').equals(today).first(),
+    db.events.where('date').between(today, end, true, true).toArray(),
+    db.notes.where('date').between(today, end, true, true).toArray(),
     db.alarms.filter(a => a.enabled).toArray(),
-    db.events.where('date').above(today).limit(200).toArray(),
+    db.events.where('date').aboveOrEqual(today).limit(400).toArray(),
   ]);
-  const deadlines = allUpcoming.filter(e => e.type === 'exam' || e.type === 'assignment').sort((a, b) => a.date.localeCompare(b.date)).slice(0, 4);
-  const nextAlarm = alarms.sort((a, b) => a.time.localeCompare(b.time))[0];
+  const days: WidgetSnapshot['days'] = {};
+  for (const e of events.sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start))) {
+    if (e.allDay) continue;
+    (days[e.date] ??= []).push({ title: e.title, start: e.start, end: e.end, startLabel: fmtTime(e.start), location: e.location, type: e.type, courseCode: e.courseCode });
+  }
+  const noteMap: Record<string, string> = {};
+  for (const n of notes) if (n.content.trim()) noteMap[n.date] = n.content;
+  const deadlines = upcoming.filter(e => e.type === 'exam' || e.type === 'assignment').sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start)).slice(0, 6);
   return {
-    updatedAt: Date.now(), date: today, studentName: profile?.name ?? '',
-    events: events.filter(e => !e.allDay).map(e => ({ title: e.title, start: e.start, end: e.end, startLabel: fmtTime(e.start), location: e.location, type: e.type, courseCode: e.courseCode })),
-    note: note?.content ?? '', nextAlarm: nextAlarm ? `${fmtTime(nextAlarm.time)} · ${nextAlarm.label}` : null,
+    updatedAt: Date.now(), studentName: profile?.name ?? '', days, notes: noteMap,
+    alarms: alarms.map(a => ({ time: a.time, timeLabel: fmtTime(a.time), label: a.label, days: a.days })),
     deadlines: deadlines.map(d => ({ title: d.title, date: d.date, type: d.type })),
   };
 }
@@ -47,10 +55,13 @@ export async function syncWidgets() {
   try {
     const snap = await buildSnapshot();
     await Preferences.set({ key: 'widget_snapshot', value: JSON.stringify(snap) });
-    // Ask native side to refresh widgets (no-op on web)
-    const w = window as unknown as { JUWidgets?: { refresh: () => void } };
-    w.JUWidgets?.refresh?.();
+    if (Capacitor.isNativePlatform()) await Widgets.refresh();
   } catch (e) { console.warn('widget sync failed', e); }
+}
+
+export async function requestPinWidget(kind: 'today' | 'note' | 'alarm') {
+  if (!Capacitor.isNativePlatform()) return false;
+  try { await syncWidgets(); const r = await Widgets.requestPin({ kind }); return r.supported; } catch { return false; }
 }
 
 /** Subscribe to DB changes and keep widgets fresh. */
@@ -61,9 +72,12 @@ export function startWidgetSync() {
   const d = () => { scheduleWidgetSync(); };
   for (const t of tables) { t.hook('creating', c); t.hook('updating', u); t.hook('deleting', d); }
   syncWidgets();
+  const onVis = () => { if (document.visibilityState === 'hidden') syncWidgets(); };
+  document.addEventListener('visibilitychange', onVis);
   const iv = window.setInterval(syncWidgets, 15 * 60 * 1000);
   return () => {
     for (const t of tables) { t.hook('creating').unsubscribe(c); t.hook('updating').unsubscribe(u); t.hook('deleting').unsubscribe(d); }
+    document.removeEventListener('visibilitychange', onVis);
     window.clearInterval(iv);
   };
 }

@@ -1,24 +1,22 @@
-package bd.ac.juniv.urp.calendar;
+package app.caca;
 
 import android.os.Bundle;
-import android.webkit.WebView;
 
 import com.getcapacitor.BridgeActivity;
 
-import bd.ac.juniv.urp.calendar.widgets.WidgetData;
+import app.caca.widgets.WidgetData;
 
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        registerPlugin(WidgetsPlugin.class);
         super.onCreate(savedInstanceState);
-        WebView wv = getBridge().getWebView();
-        wv.addJavascriptInterface(new WidgetBridge(this), "JUWidgets");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        // Make sure home-screen widgets reflect the latest edits when the user leaves the app.
+        // Home-screen widgets should reflect the latest edits as soon as the user leaves the app.
         WidgetData.refreshAll(this);
     }
 }

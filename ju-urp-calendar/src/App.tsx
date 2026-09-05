@@ -2,9 +2,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { App as CapApp } from '@capacitor/app';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import { GraduationCap } from 'lucide-react';
+import { AppLogo } from './components/AppLogo';
+import { Onboarding } from './pages/Onboarding';
+import { CoursesPage } from './pages/Courses';
 import { db } from './lib/db';
-import { seedIfNeeded } from './data/seed';
+import { initIfNeeded } from './data/seed';
 import { todayKey } from './lib/utils';
 import { initNotifications, isNative, rescheduleAll } from './lib/notifications';
 import { startWidgetSync } from './lib/widget';
@@ -21,7 +23,7 @@ import { WidgetsPage } from './pages/Widgets';
 import { ProfilePage } from './pages/Profile';
 import { SettingsPage } from './pages/Settings';
 
-const ROUTES: Route[] = ['dashboard', 'calendar', 'schedule', 'notes', 'lectures', 'alarms', 'widgets', 'profile', 'settings'];
+const ROUTES: Route[] = ['dashboard', 'calendar', 'schedule', 'notes', 'lectures', 'courses', 'alarms', 'widgets', 'profile', 'settings'];
 function routeFromHash(): Route { const h = location.hash.replace('#/', '') as Route; return ROUTES.includes(h) ? h : 'dashboard'; }
 
 export default function App() {
@@ -32,7 +34,7 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      try { await seedIfNeeded(); } catch (e) { console.error('seed failed', e); }
+      try { await initIfNeeded(); } catch (e) { console.error('seed failed', e); }
       await initNotifications();
       setReady(true);
       const stop = startWidgetSync();
@@ -67,7 +69,8 @@ export default function App() {
   const navigate = useCallback((r: Route) => { location.hash = `/${r}`; setRoute(r); window.scrollTo(0, 0); }, []);
   const openDay = useCallback((d: string) => { setSelectedDay(d); navigate('notes'); }, [navigate]);
 
-  if (!ready) return <Splash />;
+  if (!ready || settings === undefined) return <Splash />;
+  if (!settings.onboarded) return <Onboarding onDone={() => navigate('dashboard')} />;
 
   return (
     <ToastProvider>
@@ -77,6 +80,7 @@ export default function App() {
         {route === 'schedule' && <SchedulePage selected={selectedDay} onSelect={setSelectedDay} />}
         {route === 'notes' && <NotesPage selected={selectedDay} onSelect={setSelectedDay} />}
         {route === 'lectures' && <LecturesPage />}
+        {route === 'courses' && <CoursesPage />}
         {route === 'alarms' && <AlarmsPage />}
         {route === 'widgets' && <WidgetsPage />}
         {route === 'profile' && <ProfilePage />}
@@ -89,10 +93,10 @@ export default function App() {
 
 function Splash() {
   return (
-    <div className="flex h-full flex-col items-center justify-center bg-gradient-to-br from-brand-600 to-indigo-800 text-white">
-      <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white/15 backdrop-blur ring-1 ring-white/20 shadow-xl animate-pulse"><GraduationCap className="h-10 w-10" /></div>
-      <h1 className="mt-6 text-xl font-bold">JU URP Calendar</h1>
-      <p className="mt-1 text-sm text-brand-100">Preparing your semester…</p>
+    <div className="flex h-full flex-col items-center justify-center bg-gradient-to-b from-[#062a3f] to-[#24455a] text-white">
+      <div className="animate-pulse"><AppLogo size={96} /></div>
+      <h1 className="mt-6 text-xl font-bold">CaCa</h1>
+      <p className="mt-1 text-sm text-white/70">Loading…</p>
       <div className="mt-6 h-1 w-40 overflow-hidden rounded-full bg-white/20"><div className="h-full w-1/2 animate-[shimmer_1.2s_ease-in-out_infinite] rounded-full bg-white" /></div>
       <style>{`@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}`}</style>
     </div>

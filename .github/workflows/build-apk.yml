@@ -43,9 +43,9 @@ jobs:
 
       - name: Generate release keystore (self-signed, sideload)
         run: |
-          keytool -genkeypair -v -keystore android/app/release.keystore -storepass juurp2024 -keypass juurp2024 \
-            -alias juurp -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=JU URP Calendar, OU=URP, O=Jahangirnagar University, L=Savar, ST=Dhaka, C=BD"
+          keytool -genkeypair -v -keystore android/app/release.keystore -storepass caca2024 -keypass caca2024 \
+            -alias caca -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=CaCa, O=CaCa, L=Dhaka, C=BD"
 
       - name: Build signed release APK
         working-directory: ju-urp-calendar/android
@@ -53,25 +53,25 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon \
             -Pandroid.injected.signing.store.file=$PWD/app/release.keystore \
-            -Pandroid.injected.signing.store.password=juurp2024 \
-            -Pandroid.injected.signing.key.alias=juurp \
-            -Pandroid.injected.signing.key.password=juurp2024
-          cp app/build/outputs/apk/release/app-release.apk ../JU-URP-Calendar.apk
+            -Pandroid.injected.signing.store.password=caca2024 \
+            -Pandroid.injected.signing.key.alias=caca \
+            -Pandroid.injected.signing.key.password=caca2024
+          cp app/build/outputs/apk/release/app-release.apk ../CaCa.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: JU-URP-Calendar-apk
-          path: ju-urp-calendar/JU-URP-Calendar.apk
+          name: CaCa.apk
+          path: ju-urp-calendar/CaCa.apk
           if-no-files-found: error
 
       - name: Publish GitHub release (latest build)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-latest
-          name: JU URP Calendar – latest APK
+          name: CaCa – latest APK
           body: |
             Installable Android APK (Android 10+). Enable "Install unknown apps" for your browser/file manager, then open the APK.
             Built from ${{ github.sha }} on branch ${{ github.ref_name }}.
-          files: ju-urp-calendar/JU-URP-Calendar.apk
+          files: ju-urp-calendar/CaCa.apk
           prerelease: false

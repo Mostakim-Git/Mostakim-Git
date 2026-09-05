@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        brand: { 50:'#eef4ff',100:'#dbe6fe',200:'#bfd2fe',300:'#93b4fd',400:'#608bfa',500:'#3b63f6',600:'#2545eb',700:'#1d33d8',800:'#1e2caf',900:'#1e2b8a',950:'#161c54' },
+        brand: { 50:'#ecfeff',100:'#cffafe',200:'#a5f3fc',300:'#67e8f9',400:'#22d3ee',500:'#0891b2',600:'#0e7490',700:'#155e75',800:'#164e63',900:'#0b3d55',950:'#062a3f' },
       },
       fontFamily: { sans: ['Inter', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif'] },
       boxShadow: { card: '0 1px 2px rgba(16,24,40,.04), 0 4px 16px -4px rgba(16,24,40,.08)' },

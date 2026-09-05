@@ -52,17 +52,17 @@ export function SettingsPage() {
       <Section title="Data" icon={Database}>
         <Row label="Export backup" desc="Download events, notes, alarms & profile as JSON"><button onClick={exportData} className="btn-outline"><Download className="h-4 w-4" /> Export</button></Row>
         <Row label="Import backup" desc="Restore from a JSON backup file"><label className="btn-outline cursor-pointer">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Import<input type="file" accept="application/json" className="hidden" onChange={e => e.target.files?.[0] && importData(e.target.files[0])} /></label></Row>
-        <Row label="Reset to demo data" desc="Erase everything and reload the sample semester"><button onClick={() => setConfirm(true)} className="btn-outline text-rose-600 border-rose-200 hover:bg-rose-50"><RotateCcw className="h-4 w-4" /> Reset</button></Row>
+        <Row label="Erase all data" desc="Start fresh — removes everything on this device"><button onClick={() => setConfirm(true)} className="btn-outline text-rose-600 border-rose-200 hover:bg-rose-50"><RotateCcw className="h-4 w-4" /> Erase</button></Row>
       </Section>
       <Section title="About" icon={Info}>
         <div className="text-sm text-slate-600 dark:text-slate-300 space-y-1">
-          <p><b>JU URP Calendar</b> v1.0.0 — an offline academic planner for students of the Department of Urban & Regional Planning, Jahangirnagar University, Savar, Dhaka.</p>
+          <p><b>CaCa</b> v1.1.0 — an offline class calendar for any student, any university. Courses, year, department and everything else are fully customisable.</p>
           <p className="text-slate-500">Built with React, Capacitor and IndexedDB. Works fully offline on Android 10+.</p>
         </div>
       </Section>
 
-      <Modal open={confirm} onClose={() => setConfirm(false)} title="Reset all data?" footer={<><button onClick={() => setConfirm(false)} className="btn-outline">Cancel</button><button onClick={async () => { setBusy(true); await resetAllData(); await rescheduleAll(); setBusy(false); setConfirm(false); toast('Demo data restored'); }} className="btn-danger">{busy ? 'Resetting…' : 'Yes, reset everything'}</button></>}>
-        <p className="text-sm text-slate-600 dark:text-slate-300">This deletes all events, notes, alarms, lecture PDFs and profile edits on this device, then reloads the demo semester. This cannot be undone.</p>
+      <Modal open={confirm} onClose={() => setConfirm(false)} title="Erase all data?" footer={<><button onClick={() => setConfirm(false)} className="btn-outline">Cancel</button><button onClick={async () => { setBusy(true); await resetAllData(); await rescheduleAll(); setBusy(false); setConfirm(false); location.hash = ''; location.reload(); }} className="btn-danger">{busy ? 'Erasing…' : 'Yes, erase everything'}</button></>}>
+        <p className="text-sm text-slate-600 dark:text-slate-300">This deletes all events, notes, courses, alarms, class-note records and profile data from the app. PDF files already saved in your file manager are kept. This cannot be undone.</p>
       </Modal>
     </div>
   );
