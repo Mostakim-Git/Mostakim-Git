@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CaCa</string>
+    <string name="title_activity_main">CaCa</string>
+    <string name="package_name">app.caca</string>
+    <string name="custom_url_scheme">caca</string>
+    <string name="widget_today">CaCa · Today\'s Classes</string>
+    <string name="widget_note">CaCa · Daily Note</string>
+    <string name="widget_alarm">CaCa · Next Alarm</string>
+    <string name="widget_today_desc">Your classes and events for today</string>
+    <string name="widget_note_desc">Today\'s note at a glance</string>
+    <string name="widget_alarm_desc">Next alarm and upcoming deadline</string>
+</resources>

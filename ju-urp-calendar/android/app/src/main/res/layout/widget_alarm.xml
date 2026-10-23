@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@drawable/widget_bg_brand" android:padding="14dp" android:gravity="center_horizontal">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="⏰ Next alarm" android:textColor="#CCFFFFFF" android:textSize="11sp" />
+    <TextView android:id="@+id/time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="--:--" android:textColor="#FFFFFF" android:textSize="28sp" android:textStyle="bold" />
+    <TextView android:id="@+id/label" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:singleLine="true" android:ellipsize="end" android:textColor="#CCFFFFFF" android:textSize="11sp" />
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33FFFFFF" android:layout_marginTop="8dp" android:layout_marginBottom="6dp" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="NEXT DEADLINE" android:textColor="#99FFFFFF" android:textSize="9sp" />
+    <TextView android:id="@+id/deadline" android:layout_width="match_parent" android:layout_height="wrap_content" android:singleLine="true" android:ellipsize="end" android:text="None" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+    <TextView android:id="@+id/deadline_date" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="11sp" />
+</LinearLayout>
